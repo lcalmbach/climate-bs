@@ -32,7 +32,7 @@ class Home():
         st.title('Witterung-bs')
         st.markdown(HOME_INFO)
         locale.setlocale(locale.LC_ALL, '')
-        locale.setlocale(locale.LC_TIME, 'de_DE.UTF-8')
+        locale.setlocale(locale.LC_TIME, 'de_DE')
         max_date = self.data['datum'].max()
         max_month_name = max_date.strftime('%B')
         month = max_date.strftime('%m')
