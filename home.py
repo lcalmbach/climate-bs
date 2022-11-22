@@ -31,6 +31,7 @@ class Home():
     def show_menu(self):
         st.title('Witterung-bs')
         st.markdown(HOME_INFO)
+        locale.setlocale(locale.LC_ALL, '')
         locale.setlocale(locale.LC_TIME, 'de_DE.UTF-8')
         max_date = self.data['datum'].max()
         max_month_name = max_date.strftime('%B')
