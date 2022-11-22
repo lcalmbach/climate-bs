@@ -7,10 +7,10 @@ from stats import Stats
 from home import Home
 from extremas import Extremas
 
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 __author__ = 'Lukas Calmbach'
 __author_email__ = 'lcalmbach@gmail.com'
-VERSION_DATE = '2022-21-11'
+VERSION_DATE = '2022-22-11'
 my_name = 'Witterung-bs'
 my_kuerzel = "WEx"
 SOURCE_URL = 'https://data.bs.ch/explore/dataset/100227'

@@ -122,18 +122,21 @@ def time_series_chart(df, settings):
         tooltip=settings['tooltip']
     )
     if 'show_regression' in settings:
-        line = plot.transform_regression(settings['x'], settings['y']).mark_line(color='orange')
-        plot += line
+        if settings['show_regression']:
+            line = plot.transform_regression(settings['x'], settings['y']).mark_line(color='orange')
+            plot += line
     if 'show_average' in settings:
-        avg = df[settings['y']].mean()
-        df_avg = pd.DataFrame({'x':[df[settings['x']].min(), df[settings['x']].max()], 'y':[avg, avg]})
-        line = alt.Chart(df_avg).mark_line(color= 'red').encode(
-            x= 'x',
-            y= 'y',
-        )
-        plot += line
+        if settings['show_average']:
+            avg = df[settings['y']].mean()
+            df_avg = pd.DataFrame({'x':[df[settings['x']].min(), df[settings['x']].max()], 'y':[avg, avg]})
+            line = alt.Chart(df_avg).mark_line(color= 'red').encode(
+                x= 'x',
+                y= 'y',
+            )
+            plot += line
     plot = plot.properties(width=settings['width'], height=settings['height'], title = title)
     st.altair_chart(plot)
+
 
 def heatmap(df, settings):
     title = settings['title'] if 'title' in settings else ''
@@ -190,8 +193,9 @@ def histogram(df:pd.DataFrame, settings:dict):
         x=alt.X(settings['x'], 
                 bin=alt.BinParams(maxbins=bins),
                 scale = alt.Scale(domain=x_domain),
+                title = settings['x_title']
         ),
-        y = alt.Y('count()'),
+        y = alt.Y('count()', title = settings['y_title']),
     )
 
     if 'show_current_month' in settings:

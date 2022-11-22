@@ -5,6 +5,8 @@ import pandas as pd
 from const import *
 from texts import *
 import plots
+import locale
+from utils import get_max_month_name
 
 class Stats():
     def __init__(self, type):
@@ -33,7 +35,7 @@ class Stats():
 
     def show_histogram(self, month, param):
         df = self.data[(self.data['monat']==month) & (self.data['parameter']==param)]
-        settings = {'width': 800, 'height': 400, 'x': 'wert'}
+        settings = {'width': 800, 'height': 400, 'x': 'wert', 'x_title': param, 'y_title': 'Anzahl Monate'}
         if st.sidebar.checkbox('Zeige letzten Monat in Grafik'):
             value = self.data[(self.data['datum'] == self.max_date) & (self.data['parameter'] == param)].iloc[0]['wert']
             settings['show_current_month'] = value
@@ -66,9 +68,13 @@ class Stats():
         # = """Alle Werte für Parameter {} seit 1921 für den Mponat {}. Das aktuelle Jahr hat Rang {} von {}"""
 
     def show_menu(self):
+        locale.setlocale(locale.LC_TIME, 'de_DE')
+        max_date = self.data['datum'].max()
+        max_month_name = get_max_month_name(self.data, 'datum')
         sel_par = st.sidebar.selectbox('Parameter', options=self.parameters)
         sel_plot = st.sidebar.selectbox('Ausgabe', options=STAT_PLOTS)
-        sel_monat = st.sidebar.selectbox('Monat', options=STAT_MONTHS)
+        idx = STAT_MONTHS.index(max_month_name)
+        sel_monat = st.sidebar.selectbox('Monat', options=STAT_MONTHS, index=idx)
         sel_years = st.sidebar.slider('Jahr', min_value=1921, max_value=2022, value =(1921,2022))
 
         if STAT_PLOTS.index(sel_plot) == 0:
