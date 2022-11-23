@@ -31,7 +31,7 @@ PARAMETER_DESC = {'frosttag': 'Anzahl Tage mit Minimaltemperatur unter 0° Celsi
     'trueb': 'Anzahl Tage mit mindestens 80% Bewölkung',
     'wind1': 'Anzahl Tage mit Windgeschwindigkeiten über 15 m/sec',
     'wind2': 'Anzahl Tage mit Windgeschwindigkeiten über 26 m/sec',
-    'heizgradtage': 'Anzahl Tage mit einer mittleren Aussentemperatur unter 12°C'
+    'heiztage': 'Anzahl Tage mit einer mittleren Aussentemperatur unter 12°C'
 }
 
 

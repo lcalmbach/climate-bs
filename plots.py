@@ -196,6 +196,7 @@ def histogram(df:pd.DataFrame, settings:dict):
                 title = settings['x_title']
         ),
         y = alt.Y('count()', title = settings['y_title']),
+        tooltip=[settings['x'], 'count()'],
     )
 
     if 'show_current_month' in settings:

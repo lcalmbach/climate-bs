@@ -7,10 +7,10 @@ from stats import Stats
 from home import Home
 from extremas import Extremas
 
-__version__ = '0.0.2'
+__version__ = '0.0.3'
 __author__ = 'Lukas Calmbach'
 __author_email__ = 'lcalmbach@gmail.com'
-VERSION_DATE = '2022-22-11'
+VERSION_DATE = '2022-23-11'
 my_name = 'Witterung-bs'
 my_kuerzel = "WEx"
 SOURCE_URL = 'https://data.bs.ch/explore/dataset/100227'
@@ -49,12 +49,12 @@ def main():
     else:
         pass
     
-    menu_options = ['Home','Monats-Statistik', 'Rekorde']
+    menu_options = ['Home', 'Monats-Statistik', 'Jahres-Statistik', 'Rekorde']
     # https://icons.getbootstrap.com/
     with st.sidebar:
         st.markdown(f"## {my_name}")
         menu_action = option_menu(None, menu_options, 
-            icons=['house', 'calendar-month', 'calendar'], 
+            icons=['house', 'calendar-month', 'calendar', 'award'], 
             menu_icon="cast", default_index=0)
 
     if menu_action == menu_options[0]:
@@ -62,6 +62,8 @@ def main():
     elif menu_action == menu_options[1]:
         app = Stats(StatType.MONTHLY.value)
     elif menu_action == menu_options[2]:
+        app = Stats(StatType.YEARLY.value)
+    elif menu_action == menu_options[3]:
         app = Extremas(StatType.YEARLY.value)
     app.show_menu()
     st.sidebar.markdown(get_info(), unsafe_allow_html=True)

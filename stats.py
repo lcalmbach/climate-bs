@@ -16,6 +16,9 @@ class Stats():
         self.years = list(self.data['jahr'].unique())
         self.min_year, self.max_year = min(self.years), max(self.years)
         self.max_date = self.data['datum'].max()
+        self.current_month = get_max_month_name(self.data, 'datum')
+        self.current_year = int(self.data['datum'].max().strftime('%Y'))
+        self.sel_month = ''
         
     def get_data(self):
         # years = list(range(1910,2031,10))
@@ -24,8 +27,8 @@ class Stats():
         df = pd.read_csv(URL_CLIMATE, sep=';')
         
         df['datum'] = pd.to_datetime(df['datum'])
-        df['jahrzent'] = (df['jahr'] / 10).astype(int) * 10
-        id_vars=['datum','jahr','monat', 'jahrzent']
+        # df['jahrzent'] = (df['jahr'] / 10).astype(int) * 10
+        id_vars=['datum','jahr','monat']
         value_vars = [i for i in df.columns if i not in id_vars]
 
         df = df.melt(id_vars=id_vars,value_vars=value_vars,
@@ -33,55 +36,86 @@ class Stats():
             value_name='wert')
         return df
 
-    def show_histogram(self, month, param):
-        df = self.data[(self.data['monat']==month) & (self.data['parameter']==param)]
-        settings = {'width': 800, 'height': 400, 'x': 'wert', 'x_title': param, 'y_title': 'Anzahl Monate'}
-        if st.sidebar.checkbox('Zeige letzten Monat in Grafik'):
-            value = self.data[(self.data['datum'] == self.max_date) & (self.data['parameter'] == param)].iloc[0]['wert']
-            settings['show_current_month'] = value
+    def get_time_unit_plur(self):
+        if self.type == StatType.MONTHLY.value:
+            return 'Monate'
+        else:
+            return 'Jahre'
+
+    def show_histogram(self, df):
+        settings = {'width': 800, 'height': 400, 'x': 'wert', 'x_title': self.sel_par, 'y_title': f'Anzahl {self.get_time_unit_plur()}'}
+        if self.type == StatType.MONTHLY.value:
+            if st.sidebar.checkbox('Zeige letzten Monat in Grafik'):
+                value = self.data[(self.data['datum'] == self.max_date) & (self.data['parameter'] == self.sel_par)].iloc[0]['wert']
+                settings['show_current_month'] = value
         plots.histogram(df, settings)
     
-    def show_heatmap(self, month, param, sel_years):
-        df = self.data[ (self.data['parameter']==param) & (self.data['jahr'].isin(range(sel_years[0],sel_years[1]+1))) ]
+    def show_heatmap(self, df):
         settings = {'width': 800, 'height': 800, 'x': 'monat:N', 'y': 'jahr:N', 'color': 'wert:Q', 'tooltip':['parameter', 'jahr:O', 'monat', 'wert']}
         plots.heatmap(df, settings)
     
-    def show_timeseries(self, month, param):
-        df = self.data[(self.data['monat']==month) & (self.data['parameter']==param)]
+    def show_timeseries(self, df):
         settings = {'width': 800, 'height': 400, 'x': 'datum', 'y': 'wert', 'x_title': 'Jahr', 
-            'y_title': param, 'tooltip':['datum', 'parameter', 'wert']}
+            'y_title': self.sel_par, 'tooltip':['datum', 'parameter', 'wert']}
         settings['y_domain'] = [df['wert'].min(), df['wert'].max()]
         settings['show_regression'] = st.sidebar.checkbox('Zeige Regressionslinie')
         settings['show_average'] = st.sidebar.checkbox('Zeige Mittelwert')
         plots.time_series_chart(df, settings)
 
-    def show_table(self, month, param, sel_years):
-        df = self.data[(self.data['jahr'].isin(range(sel_years[0],sel_years[1]+1))) & \
-            (self.data['monat'] == month) & \
-            (self.data['parameter'] == param)]
-        df = df[['parameter','jahr', 'wert']]
-        df['rang'] = df.groupby('parameter')["wert"].rank("max", ascending=False)
-        max_rank = int(df['rang'].max())
+    def show_table(self, df):
         current_year_rank = int(df.loc[df['jahr']==df['jahr'].max(), 'rang'].iloc[0])
         st.write(df)
-        st.markdown(MONTH_VALUES_TABLE_LEGEND.format(param, month, current_year_rank, max_rank))
+        text = text = f"""Alle Werte für Parameter `{self.sel_par}` in den Jahren {self.sel_years[0]} bis {self.sel_years[1]}."""
+        if self.type == StatType.MONTHLY.value:
+            text += f""" für den Monat {self.sel_month}."""
+        if self.current_year in range(self.sel_years[0], self.sel_years[1]+1):
+            text += f""" Das aktuelle Jahr hat Rang {current_year_rank} von {len(df)}."""
+        text += """ Klicke auf die Spaltentitel Rang oder Jahr um nach der entsprechenden Spalte zu sortieren."""
+        st.markdown(text)
         # = """Alle Werte für Parameter {} seit 1921 für den Mponat {}. Das aktuelle Jahr hat Rang {} von {}"""
 
     def show_menu(self):
-        locale.setlocale(locale.LC_TIME, 'de_DE')
-        max_date = self.data['datum'].max()
-        max_month_name = get_max_month_name(self.data, 'datum')
-        sel_par = st.sidebar.selectbox('Parameter', options=self.parameters)
-        sel_plot = st.sidebar.selectbox('Ausgabe', options=STAT_PLOTS)
-        idx = STAT_MONTHS.index(max_month_name)
-        sel_monat = st.sidebar.selectbox('Monat', options=STAT_MONTHS, index=idx)
-        sel_years = st.sidebar.slider('Jahr', min_value=1921, max_value=2022, value =(1921,2022))
+        def get_time_series_data():
+            if self.type == StatType.MONTHLY.value:
+                df = self.data[(self.data['monat']==self.sel_month) & (self.data['parameter']==self.sel_par)]
+                df = df[df['jahr'].isin(range(self.sel_years[0],self.sel_years[1]+1))]
+            else:
+                df = self.data[(self.data['jahr'].isin(range(self.sel_years[0],self.sel_years[1]+1))) & (self.data['parameter']==self.sel_par)]
+            return df
+        
+        def get_heatmap_data():
+            df = self.data[(self.data['jahr'].isin(range(self.sel_years[0],self.sel_years[1]+1))) & (self.data['parameter']==self.sel_par)]
+            return df
+        
+        def get_table_data():
+            df = self.data[(self.data['jahr'].isin(range(self.sel_years[0],self.sel_years[1]+1))) & \
+                (self.data['parameter'] == self.sel_par)]
+            if self.type == StatType.MONTHLY.value:
+                df = df[df['monat'] == self.sel_month]
+            else:
+                df = df.groupby(['parameter','jahr']).sum().reset_index()
+            df = df[['parameter','jahr', 'wert']]
+            df['rang'] = df.groupby('parameter')["wert"].rank("max", ascending=False)
+            int_fields = ['wert','rang']
+            df[int_fields] = df[int_fields].astype(int)
+            return df
 
-        if STAT_PLOTS.index(sel_plot) == 0:
-            self.show_histogram(sel_monat, sel_par)
-        if STAT_PLOTS.index(sel_plot) == 1:
-            self.show_timeseries(sel_monat, sel_par)
-        if STAT_PLOTS.index(sel_plot) == 2:
-            self.show_heatmap(sel_monat, sel_par, sel_years)
-        if STAT_PLOTS.index(sel_plot) == 3:
-            self.show_table(sel_monat, sel_par, sel_years)
+        self.sel_par = st.sidebar.selectbox('Parameter', options=self.parameters)
+        self.sel_plot = st.sidebar.selectbox('Ausgabe', options=STAT_PLOTS)
+        if self.type == StatType.MONTHLY.value:
+            idx = STAT_MONTHS.index(self.current_month)
+            self.sel_month = st.sidebar.selectbox('Monat', options=STAT_MONTHS, index=idx)
+        self.sel_years = st.sidebar.slider('Jahr', min_value=1921, max_value=2022, value =(1921,2022))
+
+        if STAT_PLOTS.index(self.sel_plot) == 0:
+            df = get_time_series_data()
+            self.show_histogram(df)
+        if STAT_PLOTS.index(self.sel_plot) == 1:
+            df = get_time_series_data()
+            self.show_timeseries(df)
+        if STAT_PLOTS.index(self.sel_plot) == 2:
+            df = get_heatmap_data()
+            self.show_heatmap(df)
+        if STAT_PLOTS.index(self.sel_plot) == 3:
+            df = get_table_data()
+            self.show_table(df)

@@ -60,7 +60,7 @@ class Extremas():
         else:
             text +=  f" (Monat {month})"
         st.markdown(text, unsafe_allow_html=True)
-        text = f"""Der höchste Wert des Parameters "{par_desc}" während {num_years} Jahren beträgt {max}."""
+        text = f"""Der höchste Wert des Parameters `{par_desc}` während {num_years} Jahren beträgt {max}."""
         if num_max == 1:
             text += f" Dieses Maximum wurde im {max_months_csv_list} gemessen."
         elif num_max < 6:
