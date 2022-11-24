@@ -37,3 +37,7 @@ PARAMETER_DESC = {'frosttag': 'Anzahl Tage mit Minimaltemperatur unter 0° Celsi
 
 
 ALL_MONTHS_EXPRESSION = 'Alle Monate'
+
+# frosttag: https://de.wikipedia.org/wiki/Frosttag
+# hitzetag: https://de.wikipedia.org/wiki/Hei%C3%9Fer_Tag
+# hagel https://de.wikipedia.org/wiki/Hagel

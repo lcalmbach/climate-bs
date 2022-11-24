@@ -43,11 +43,11 @@ class Home():
         df_last_month = df[ df['datum'] == max_date][['parameter', 'wert']]
         df_all_months = df[(df['monat'] == max_month_name) & (df['jahr'].isin(range(sel_year_from, sel_year_to+1)))]
         df_all_months = df_all_months[['parameter', 'wert']]
-        #df_all_months['rank'] = df.groupby('parameter')["wert"].rank("max", ascending=False)
+        df_last_month['wert'] = df_last_month['wert'].astype(int)
         df_last_month = df_last_month.rename(columns={'wert': f"{max_month_name} {current_year}"})
         df_average = df_all_months[['parameter', 'wert']].groupby(['parameter']).agg(['mean', 'min', 'max', 'std']).reset_index()
         df_average.columns = ['parameter', 'mittelwert', 'minimum', 'maximum', 'standardabweichung']
-        
+        df_average[['minimum', 'maximum']] = df_average[['minimum', 'maximum']].astype(int)
         df = df_last_month.join(df_average.set_index('parameter'), on='parameter')
         
         st.write(df.set_index('parameter'))

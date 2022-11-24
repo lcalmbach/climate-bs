@@ -44,14 +44,18 @@ class Stats():
 
     def show_histogram(self, df):
         settings = {'width': 800, 'height': 400, 'x': 'wert', 'x_title': self.sel_par, 'y_title': f'Anzahl {self.get_time_unit_plur()}'}
+        settings['title'] = f"Histogramm {self.sel_par}, {self.sel_years[0]} - {self.sel_years[1]}" 
         if self.type == StatType.MONTHLY.value:
+            settings['title'] += f", Monat {self.sel_month}"
             if st.sidebar.checkbox('Zeige letzten Monat in Grafik'):
                 value = self.data[(self.data['datum'] == self.max_date) & (self.data['parameter'] == self.sel_par)].iloc[0]['wert']
                 settings['show_current_month'] = value
+            
         plots.histogram(df, settings)
     
     def show_heatmap(self, df):
         settings = {'width': 800, 'height': 800, 'x': 'monat:N', 'y': 'jahr:N', 'color': 'wert:Q', 'tooltip':['parameter', 'jahr:O', 'monat', 'wert']}
+        settings['title'] = f"Heatmap {self.sel_par}, {self.sel_years[0]} - {self.sel_years[1]}" 
         plots.heatmap(df, settings)
     
     def show_timeseries(self, df):
@@ -60,6 +64,10 @@ class Stats():
         settings['y_domain'] = [df['wert'].min(), df['wert'].max()]
         settings['show_regression'] = st.sidebar.checkbox('Zeige Regressionslinie')
         settings['show_average'] = st.sidebar.checkbox('Zeige Mittelwert')
+        settings['title'] = f"Zeitreihe {self.sel_par}, {self.sel_years[0]} - {self.sel_years[1]}" 
+        if self.type == StatType.MONTHLY.value:
+            settings['title'] += f", Monat {self.sel_month}"
+        
         plots.time_series_chart(df, settings)
 
     def show_table(self, df):
