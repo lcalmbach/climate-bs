@@ -9,10 +9,11 @@ def line_chart(df, settings):
     title = settings['title'] if 'title' in settings else ''
     if 'x_dt' not in settings: settings['x_dt'] = 'Q'
     if 'y_dt' not in settings: settings['y_dt'] = 'Q'
-    chart = alt.Chart(df).mark_line(width = 2, clip=True).encode(
+    chart = alt.Chart(df).mark_line(width = 2, clip=True,opacity=0.5).encode(
             x= alt.X(f"{settings['x']}:{settings['x_dt']}", scale=alt.Scale(domain=settings['x_domain'])),
             y= alt.Y(f"{settings['y']}:{settings['y_dt']}", scale=alt.Scale(domain=settings['y_domain'])),
-            tooltip=settings['tooltip']    
+            tooltip=settings['tooltip'],
+            color = alt.Color(settings['color'], scale=alt.Scale(scheme='redblue', reverse=True))
         )
     if 'regression' in settings:
         line = chart.transform_regression(settings['x'], settings['y']).mark_line()
@@ -23,30 +24,15 @@ def line_chart(df, settings):
 
 def scatter_plot(df, settings):
     title = settings['title'] if 'title' in settings else ''
-    chart = alt.Chart(df).mark_circle(size=60).encode(
+    chart = alt.Chart(df).mark_circle(size=60, ).encode(
         x= alt.X(settings['x'], scale=alt.Scale(domain=settings['domain'])),
         y= alt.Y(settings['y'], scale=alt.Scale(domain=settings['domain'])),
         tooltip=settings['tooltip'],
-        color=alt.Color(settings['color'], sort="descending", scale=alt.Scale(scheme='redblue'))
+        color=alt.Color(settings['color'], sort="ascending", scale=alt.Scale(scheme='bluered'))
     ).interactive()
     plot = chart.properties(width=settings['width'], height=settings['height'], title = title)
     st.altair_chart(plot)
 
-
-def wl_time_series_chart(df, settings):
-    #line = alt.Chart(df_line).mark_line(color= 'red').encode(
-    #    x= 'x',
-    #    y= 'y'
-    #    )
-
-
-    chart = alt.Chart(df).mark_line().encode(
-        x = alt.X(f"{settings['x']}:T", scale=alt.Scale(domain=settings['x_domain']), title=settings['x_title']),
-        y = alt.Y(f"{settings['y']}:Q", scale=alt.Scale(domain=settings['y_domain']), title=settings['y_title']),
-        tooltip = settings['tooltip']
-    ).interactive()
-    plot = chart.properties(width=settings['width'], height=settings['height'], title=settings['title'])
-    st.altair_chart(plot)
 
 def time_series_bar(df, settings):
     chart = alt.Chart(df).mark_bar(size=settings['size'], clip=True).encode(
@@ -116,7 +102,11 @@ def time_series_chart(df, settings):
     title = settings['title'] if 'title' in settings else ''
     if 'x_title' not in settings:
         settings['x_title'] = ''
-    plot = alt.Chart(df).mark_line(point=alt.OverlayMarkDef(color='blue')).encode(
+    if 'symbol_size' not in settings:
+        settings['symbol_size'] = 0
+    if 'rolling_avg_window' not in settings:
+        settings['rolling_avg_window'] = 0
+    plot = alt.Chart(df).mark_line(point=alt.OverlayMarkDef(color='blue', size = settings['symbol_size'])).encode(
         x= alt.X(f"{settings['x']}:T", title=settings['x_title']),#, scale=alt.Scale(domain=settings['x_domain']), ),
         y= alt.Y(f"{settings['y']}:Q", scale=alt.Scale(domain=settings['y_domain']), title=settings['y_title']),
         tooltip=settings['tooltip']
@@ -134,21 +124,42 @@ def time_series_chart(df, settings):
                 y= 'y',
             )
             plot += line
+    if settings['rolling_avg_window'] > 0:
+        df['ma'] = df[settings['y']].rolling(window=settings['rolling_avg_window']).mean()
+        # Create the chart
+        line = alt.Chart(df).mark_line(color='green').encode(
+            x=f"{settings['x']}:T",
+            y=f'ma:Q',
+            strokeWidth=alt.value(3)
+        )
+        plot += line
+
     plot = plot.properties(width=settings['width'], height=settings['height'], title = title)
     st.altair_chart(plot)
 
 
 def heatmap(df, settings):
     title = settings['title'] if 'title' in settings else ''
+    if not 'show_numbers' in settings:
+        settings['show_numbers'] = False
+    if not 'color_scheme' in settings:
+        settings['color_scheme'] = 'viridis'
     plot = alt.Chart(df).mark_rect().encode(
         x=alt.X(settings['x'],
             sort=list(cn.MONTHS_REV_DICT.keys())),
         y=alt.Y(settings['y'],
             sort=alt.EncodingSortField(field = 'jahr', order='descending'),
         ),
-        color=settings['color'],
+        color=alt.Color(f"{settings['color']}:Q", scale=alt.Scale(range=['lightblue','darkred'])),
         tooltip=settings['tooltip']
-    ).properties(width=settings['width'], title = title)
+    )
+
+    if settings['show_numbers']:
+        plot += plot.mark_text().encode(
+        text=settings['color'],
+        color=alt.value('black'))
+
+    plot = plot.properties(width=settings['width'], title = title)
     st.altair_chart(plot)
 
 
