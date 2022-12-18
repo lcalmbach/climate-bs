@@ -141,9 +141,10 @@ def time_series_chart(df, settings):
 def heatmap(df, settings):
     title = settings['title'] if 'title' in settings else ''
     if not 'show_numbers' in settings:
-        settings['show_numbers'] = False
+        settings['show_numbers'] = True
     if not 'color_scheme' in settings:
         settings['color_scheme'] = 'viridis'
+
     plot = alt.Chart(df).mark_rect().encode(
         x=alt.X(settings['x'],
             sort=list(cn.MONTHS_REV_DICT.keys())),

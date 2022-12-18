@@ -54,7 +54,7 @@ class Stats():
         plots.histogram(df, settings)
     
     def show_heatmap(self, df):
-        settings = {'width': 800, 'height': 800, 'x': 'monat:N', 'y': 'jahr:N', 'color': 'wert:Q', 'tooltip':['parameter', 'jahr:O', 'monat', 'wert']}
+        settings = {'width': 800, 'height': 800, 'x': 'monat:N', 'y': 'jahr:N', 'color': 'wert', 'tooltip':['parameter', 'jahr:O', 'monat', 'wert']}
         settings['title'] = f"Heatmap {self.sel_par}, {self.sel_years[0]} - {self.sel_years[1]}" 
         plots.heatmap(df, settings)
     

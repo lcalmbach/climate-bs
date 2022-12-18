@@ -39,8 +39,13 @@ PARAMETER_DESC = {'frosttag': 'Anzahl Tage mit Minimaltemperatur unter 0° Celsi
 ALL_MONTHS_EXPRESSION = 'Alle Monate'
 
 TEMPERATUR_LONG = './data/climate-reports-tables-homogenized_BAS.txt'
+HADCRUT_FILE = "./data/HadCRUT.4.5.0.0.monthly_ns_avg.txt"
 # frosttag: https://de.wikipedia.org/wiki/Frosttag
 # hitzetag: https://de.wikipedia.org/wiki/Hei%C3%9Fer_Tag
 # hagel https://de.wikipedia.org/wiki/Hagel
 
 START_INDUSTRIAL_PERIOD = 1901
+
+SPIRAL = [{'rings': [11,14,17], 'title': "Basel/Binningen, Temperaturdifferenz von Klimanormale ({}-{})", 'datasource': '[Meteo Schweiz](https://www.meteoswiss.admin.ch/services-and-publications/applications/ext/climate-tables-homogenized.html)'}, 
+            {'rings': [1,2.5,3], 'title': "Global Temperature Change ({}-{})",  'datasource': '[Met Office Hadley Centre](https://www.metoffice.gov.uk/hadobs/hadcrut4/data/current/download.html)'}
+        ]

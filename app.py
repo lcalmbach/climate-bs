@@ -50,7 +50,7 @@ def main():
     else:
         pass
     
-    menu_options = ['Home', 'Monats-Statistik', 'Jahres-Statistik', 'Rekorde', 'Monatsmittel seit 1864']
+    menu_options = ['Home', 'Monats-Statistik', 'Jahres-Statistik', 'Rekorde', 'Temperatur seit 1864']
     # https://icons.getbootstrap.com/
     with st.sidebar:
         st.markdown(f"## {my_name}")
