@@ -124,7 +124,7 @@ class MonthlyAverage():
             
         def get_data():
             df = pd.read_csv(
-                "./data/hadcrut.4.5.0.0.monthly_ns_avg.txt",
+                "./data/HadCRUT.4.5.0.0.monthly_ns_avg.txt",
                 delim_whitespace=True,
                 usecols=[0, 1],
                 header=None)
