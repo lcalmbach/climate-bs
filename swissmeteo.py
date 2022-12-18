@@ -1,5 +1,8 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import time
 
 #local
 from const import *
@@ -41,20 +44,19 @@ class MonthlyAverage():
         settings = {'width': 800, 'height': 800, 'x': 'Month:N', 'y': 'Year:N', 'color': 'Temperature', 'tooltip':['Year', 'Month', 'Temperature']}
         settings['title'] = f"Heatmap {self.sel_par}" 
         settings['color_scheme'] = "viridis" 
-        settings['show_numbers'] = st.sidebar.checkbox('Zeige Werte in Zelle')
+        settings['show_numbers'] = st.sidebar.checkbox('Zeige Wert in Zelle', value=True)
         plots.heatmap(df, settings)
     
     def show_timeseries(self, df):
-        
         settings = {'width': 800, 'height': 400, 'x': 'Date', 'y': 'Temperature', 'x_title': 'Jahr', 
-            'y_title': f"{self.sel_par}°C", 'tooltip':['Year', 'Month', self.sel_par]}
+            'y_title': f"{self.sel_par} °C", 'tooltip':['Year', 'Month', self.sel_par]}
         settings['y_domain'] = [df[self.sel_par].min(), df[self.sel_par].max()]
         all_years = [self.min_jahr, self.max_jahr]
         years_sel =  st.sidebar.slider('Jahr von/bis', min_value=self.min_jahr, max_value=self.max_jahr, value=all_years)
         settings['show_regression'] = st.sidebar.checkbox('Zeige Regressionslinie')
         settings['show_average'] = st.sidebar.checkbox('Zeige Mittelwert')
         settings['rolling_avg_window'] = st.sidebar.number_input('Gleitendes Mittel Fenster (Mt)', min_value=0, max_value=1000)
-        settings['title'] = f"Zeitreihe" 
+        settings['title'] = f"Temperatur °C Monatsmittel, Station Basel/Binningen" 
         if years_sel != all_years:
             df = df[(df['Year']>= years_sel[0]) & (df['Year']<= years_sel[1])]
         plots.time_series_chart(df, settings)
@@ -72,13 +74,14 @@ class MonthlyAverage():
         df['Month'] = 7
         df['Day'] = 1
         df['Date'] = pd.to_datetime(df[['Year', 'Month', 'Day']])
+        df['Temperature'] = df['Temperature'].round(1)
         settings['y'] = "Temperature"
         settings['x'] = 'Date'
         settings['x_dt'] = 'T'
         settings['y_domain'] = [df[settings['y']].min(), df[settings['y']].max()]
         settings['title']='Jahresmittel'
         #print(df.dtypes)
-        #settings['tooltip'] = ['Year', 'Month', settings['y']],
+        settings['tooltip'] = ['Year', 'Temperature']
         plots.time_series_chart(df, settings)
 
     
@@ -96,10 +99,74 @@ class MonthlyAverage():
         settings['title'] = 'Differenz Monatsmittel vom Monatsmittel der Referenzperiode vor 1901'
 
         plots.line_chart(df, settings)
+
+
+    def show_spiral(self, df):
+        """
+        Show temperature spiral using code from https://www.dataquest.io/blog/climate-temperature-spirals-python/
+
+        Args:
+            df (_type_): _description_
+        """
+        # 
+        def plot_rings():
+            full_circle_thetas = np.linspace(0, 2*np.pi, 1000)
+            blue_line_one_radii = [1.0]*1000
+            red_line_one_radii = [2.5]*1000
+            red_line_two_radii = [3.0]*1000
+            ax1.plot(full_circle_thetas, blue_line_one_radii, c='blue')
+            ax1.plot(full_circle_thetas, red_line_one_radii, c='orange')
+            ax1.plot(full_circle_thetas, red_line_two_radii, c='red')
+
+            ax1.text(np.pi/2, 1.0, "0.0 C", color="blue", ha='center', fontdict={'fontsize': 20})
+            ax1.text(np.pi/2, 2.5, "1.5 C", color="orange", ha='center', fontdict={'fontsize': 20})
+            ax1.text(np.pi/2, 3.0, "2.0 C", color="red", ha='center', fontdict={'fontsize': 20})
+            
+        def get_data():
+            df = pd.read_csv(
+                "./data/hadcrut.4.5.0.0.monthly_ns_avg.txt",
+                delim_whitespace=True,
+                usecols=[0, 1],
+                header=None)
+            df['year'] = df.iloc[:, 0].apply(lambda x: x.split("/")[0]).astype(int)
+            df['month'] = df.iloc[:, 0].apply(lambda x: x.split("/")[1]).astype(int)
+            min_year = df['year'].min()
+            df = df.rename(columns={1: "value"})
+            df = df.iloc[:, 1:]
+            df = df.set_index(['year', 'month'])
+            df -= df.loc[min_year:1900].mean()
+            return df.reset_index()
+
+        temperature_df = get_data()
+        fig = plt.figure(figsize=(14,14))
+        ax1 = plt.subplot(111, projection='polar')
+
+        ax1.axes.get_yaxis().set_ticklabels([])
+        ax1.axes.get_xaxis().set_ticklabels([])
+        fig.set_facecolor("#323331")
+        years = temperature_df['year'].unique()
+
+        plot_rings()
+        plot_placeholder = st.empty()
+        theta = np.linspace(0, 2*np.pi, 12)
+        ax1.grid(False)
+        ax1.set_title("Global Temperature Change (1850-2017)", color='white', fontdict={'fontsize': 20})
+        ax1.set_ylim(0, 3.25)
+        ax1.set_facecolor('#000100')
+        if st.sidebar.button("Starte Animation"):
+            for index, year in enumerate(years):
+                r = temperature_df[temperature_df['year'] == year]['value'] + 1
+                clr = plt.cm.viridis(index*2)
+                ax1.text(0,0, str(year-1), color='#000100', size=30, ha='center')
+                ax1.text(0,0, str(year), color=clr, size=30, ha='center')
+                ax1.plot(theta, r, c=clr)
+                plot_placeholder.pyplot(fig)
+            plot_rings()
         
 
+
     def show_menu(self):
-        plot_options = ['Heatmap', 'Monate überlagert', 'Zeitreihe']
+        plot_options = ['Heatmap', 'Monate überlagert', 'Zeitreihe', 'Spirale']
         plot_type = st.sidebar.selectbox('Darstellung', options=plot_options)
         if plot_options.index(plot_type) == 0:
             self.show_heatmap(self.data)
@@ -107,3 +174,6 @@ class MonthlyAverage():
             self.show_month_superposed(self.data)
         if plot_options.index(plot_type) == 2:
             self.show_timeseries(self.data)
+        if plot_options.index(plot_type) == 3:
+            self.show_spiral(self.data)
+            #self.test()

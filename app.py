@@ -6,7 +6,7 @@ from const import *
 from stats import Stats
 from home import Home
 from extremas import Extremas
-from temperature import MonthlyAverage
+from swissmeteo import MonthlyAverage
 
 __version__ = '0.0.4'
 __author__ = 'Lukas Calmbach'
