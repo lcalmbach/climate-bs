@@ -11,7 +11,7 @@ from utils import get_max_month_name
 class Stats():
     def __init__(self, type):
         self.type = type
-        self.data = self.get_data()
+        self.data = st.session_state['data']
         self.parameters = list(self.data['parameter'].unique())
         self.years = list(self.data['jahr'].unique())
         self.min_year, self.max_year = min(self.years), max(self.years)
@@ -49,8 +49,7 @@ class Stats():
             settings['title'] += f", Monat {self.sel_month}"
             if st.sidebar.checkbox('Zeige letzten Monat in Grafik'):
                 value = self.data[(self.data['datum'] == self.max_date) & (self.data['parameter'] == self.sel_par)].iloc[0]['wert']
-                settings['show_current_month'] = value
-            
+                settings['show_current_month'] = value 
         plots.histogram(df, settings)
     
     def show_heatmap(self, df):

@@ -1,9 +1,11 @@
+import plotly.graph_objects as go
+import plotly.express as px
 import streamlit as st
 import pandas as pd
 import numpy as np
 import altair as alt
 import const as cn
-import datetime
+
 
 def line_chart(df, settings):
     title = settings['title'] if 'title' in settings else ''
@@ -21,6 +23,7 @@ def line_chart(df, settings):
     else:
         plot = chart.properties(width=settings['width'], height=settings['height'], title = title)
     st.altair_chart(plot)
+
 
 def scatter_plot(df, settings):
     title = settings['title'] if 'title' in settings else ''
@@ -224,3 +227,65 @@ def histogram(df:pd.DataFrame, settings:dict):
         plot += current_month_dot
     plot = plot.properties(title = settings['title'], width=settings['width'], height=settings['height'])
     return st.altair_chart(plot)
+
+def line_chart_3d(df, min, max):
+    def value_to_xy(value, month):
+        v = value - min
+        # st.write(value, min ,v, month)
+        origin = (np.abs(min) + max)/2
+        theta_radians = 2*np.pi/12 * (month-1)
+        x = origin + v * np.cos(theta_radians)
+        y = origin + v * np.sin(theta_radians)
+        return x,y
+
+    rad_max:float = np.abs(min) + max + 1
+    xl, yl, zl,clr  = [], [], [], [] 
+    df['x'] = 0
+    df['y'] = 0
+    df['z'] = 0
+
+    for index, row in df.iterrows():
+        x, y = value_to_xy(row['value'], row['month'])
+        z = row['year'] + row['month'] /12
+        df.loc[index, 'x'] = x
+        df.loc[index, 'y'] = y
+        df.loc[index,'z'] = z
+
+    df['text'] = df['year'].map(str) + '/' + df['month'].map(str) + ': '+ df['value'].round(1).map(str) + ' °C'
+    ##color schemas: https://plotly.com/python/colorscales/#colorscales-in-dash
+    fig = px.scatter_3d(df,
+        x='x', y='y', z='z',
+        color='value',
+        color_continuous_scale='edge',#px.colors.sequential.ed
+        
+
+        # this does not work
+        hover_data = {'year':True, 'month':True, 'value':  ':.1f', 'x': False, 'y': False, 'z': False},
+    )
+    fig.update_yaxes(visible=False, showticklabels=False)
+    fig.update_xaxes(visible=False, showticklabels=False)
+    fig.update_traces(mode="markers+lines")
+
+    fig.update_layout(
+        width=800,
+        height=700,
+        autosize=False,
+        scene=dict(
+            camera=dict(
+                up=dict(
+                    x=0,
+                    y=0,
+                    z=1
+                ),
+                eye=dict(
+                    x=0,
+                    y=1.0707,
+                    z=1,
+                )
+            ),
+            aspectratio = dict( x=1, y=1, z=0.7 ),
+            aspectmode = 'manual'
+        ),
+    )
+
+    st.plotly_chart(fig, width=1000, height=1000)

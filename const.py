@@ -12,7 +12,9 @@ STAT_MONTHS = ['Januar', 'Februar','März','April','Mai','Juni','Juli','August',
 MONTHS_REV_DICT = {'Januar':1, 'Februar':2, 'März':3, 'April':4, 'Mai':5, 'Juni':6, 'Juli':7, 'August':8, 'September':9,'Oktober':10,'November':11,'Dezember':12}
 COMPARE_TIME_INTERVALS = ['1921 bis heute', '1900-1910']
 
-PARAMETER_DESC = {'frosttag': 'Anzahl Tage mit Minimaltemperatur unter 0° Celsius',
+PARAMETER_DESC = {
+    'mittl_temperatur': 'Monats Mittelwert der Temperatur',
+    'frosttag': 'Anzahl Tage mit Minimaltemperatur unter 0° Celsius',
     'eistag': 'Anzahl Tage mit Maximaltemperatur unter 0° Celsius',
     'sommertag': 'Anzahl Tage mit Maximaltemperatur über 25° Celsius',
     'hitzetag':'Anzahl Tage mit Maximaltemperatur über 30° Celsius',
@@ -39,13 +41,15 @@ PARAMETER_DESC = {'frosttag': 'Anzahl Tage mit Minimaltemperatur unter 0° Celsi
 ALL_MONTHS_EXPRESSION = 'Alle Monate'
 
 TEMPERATUR_LONG = './data/climate-reports-tables-homogenized_BAS.txt'
-HADCRUT_FILE = "./data/HadCRUT.4.5.0.0.monthly_ns_avg.txt"
+HADCRUT_FILE_GL = "./data/HadCRUT.4.5.0.0.monthly_ns_avg.txt"
+HADCRUT_FILE_NH = "./data/HadCRUT.4.5.0.0.monthly_nh.txt"
 # frosttag: https://de.wikipedia.org/wiki/Frosttag
 # hitzetag: https://de.wikipedia.org/wiki/Hei%C3%9Fer_Tag
 # hagel https://de.wikipedia.org/wiki/Hagel
 
 START_INDUSTRIAL_PERIOD = 1901
 
-SPIRAL = [{'rings': [11,14,17], 'title': "Basel/Binningen, Temperaturdifferenz von Klimanormale ({}-{})", 'datasource': '[Meteo Schweiz](https://www.meteoswiss.admin.ch/services-and-publications/applications/ext/climate-tables-homogenized.html)'}, 
-            {'rings': [1,2.5,3], 'title': "Global Temperature Change ({}-{})",  'datasource': '[Met Office Hadley Centre](https://www.metoffice.gov.uk/hadobs/hadcrut4/data/current/download.html)'}
+SPIRAL = [{'rings': [11,14,17], 'title': "Basel/Binningen, Temperaturdifferenz von Klimanormale ({}-{})", 'datasource': '[Meteo Schweiz](https://www.meteoswiss.admin.ch/services-and-publications/applications/ext/climate-tables-homogenized.html)', 'file': TEMPERATUR_LONG}, 
+            {'rings': [1,2.5,3], 'title': "Global Temperature Change ({}-{})",  'datasource': '[Met Office Hadley Centre](https://www.metoffice.gov.uk/hadobs/hadcrut4/data/current/download.html)','file': HADCRUT_FILE_GL},
+            {'rings': [1,2.5,3], 'title': "Global Temperature Change Norther hemisphere ({}-{})",  'datasource': '[Met Office Hadley Centre](https://www.metoffice.gov.uk/hadobs/hadcrut4/data/current/download.html)','file': HADCRUT_FILE_NH}
         ]

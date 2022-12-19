@@ -8,10 +8,10 @@ from home import Home
 from extremas import Extremas
 from swissmeteo import MonthlyAverage
 
-__version__ = '0.0.4'
+__version__ = '0.0.5'
 __author__ = 'Lukas Calmbach'
 __author_email__ = 'lcalmbach@gmail.com'
-VERSION_DATE = '2022-17-12'
+VERSION_DATE = '2022-19-12'
 my_name = 'Witterung-bs'
 my_kuerzel = "WEx"
 SOURCE_URL = 'https://data.bs.ch/explore/dataset/100227'
@@ -50,7 +50,7 @@ def main():
     else:
         pass
     
-    menu_options = ['Home', 'Monats-Statistik', 'Jahres-Statistik', 'Rekorde', 'Temperatur seit 1864']
+    menu_options = ['Home', 'Temperatur seit 1864', 'Monats-Statistik', 'Jahres-Statistik', 'Rekorde']
     # https://icons.getbootstrap.com/
     with st.sidebar:
         st.markdown(f"## {my_name}")
@@ -61,13 +61,14 @@ def main():
     if menu_action == menu_options[0]:
         app = Home()
     elif menu_action == menu_options[1]:
-        app = Stats(StatType.MONTHLY.value)
-    elif menu_action == menu_options[2]:
-        app = Stats(StatType.YEARLY.value)
-    elif menu_action == menu_options[3]:
-        app = Extremas(StatType.YEARLY.value)
-    elif menu_action == menu_options[4]:
         app = MonthlyAverage()
+    elif menu_action == menu_options[2]:
+        app = Stats(StatType.MONTHLY.value)
+    elif menu_action == menu_options[3]:
+        app = Stats(StatType.YEARLY.value)
+    elif menu_action == menu_options[4]:
+        app = Extremas(StatType.YEARLY.value)
+    
     app.show_menu()
     st.sidebar.markdown(get_info(), unsafe_allow_html=True)
 

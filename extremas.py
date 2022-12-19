@@ -9,28 +9,11 @@ import plots
 class Extremas():
     def __init__(self, type):
         self.type = type
-        self.data = self.get_data()
+        self.data = st.session_state['data']
         self.parameters = list(self.data['parameter'].unique())
         self.years = list(self.data['jahr'].unique())
         self.min_year, self.max_year = min(self.years), max(self.years)
         self.max_date = self.data['datum'].max()
-        
-    def get_data(self):
-        # years = list(range(1910,2031,10))
-        # group = pd.cut(s, bins=years, labels=years[:-1])
-        # grouped = data.groupby([group, 'type']).size()
-        df = pd.read_csv(URL_CLIMATE, sep=';')
-        
-        df['datum'] = pd.to_datetime(df['datum'])
-        df['jahrzent'] = (df['jahr'] / 10).astype(int) * 10
-        id_vars=['datum','jahr','monat', 'jahrzent']
-        value_vars = [i for i in df.columns if i not in id_vars]
-
-        df = df.melt(id_vars=id_vars,value_vars=value_vars,
-            var_name='parameter', 
-            value_name='wert')
-        return df
-
     
     def show_extremas(self, month, years, param):
         df = self.data[(self.data['jahr'].isin(range(years[0], years[1]+1))) & \
@@ -42,11 +25,11 @@ class Extremas():
         
         num_years = len(df['jahr'].unique())
         par_desc = PARAMETER_DESC[param]
-        max = int(df['wert'].max())
+        max = df['wert'].max()
         df_max = df[df['wert'] == max]
         num_max = len(df_max)
         max_months_csv_list = ', '.join(df_max['month_expression'])
-        min = int(df['wert'].min())
+        min = df['wert'].min()
         df_min = df[df['wert']==min]
         num_min = len(df_min)
         min_months_csv_list = ', '.join(df_min['month_expression'])
@@ -54,13 +37,21 @@ class Extremas():
         std = df['wert'].std()
         num_within_2std = len(df[(df['wert'] <= avg + std) & (df['wert'] >= avg - std)])
 
-        text = f"### Maxima und Verteilung für Parameter {par_desc} in den Jahren {years[0]} bis {years[1]}"
+        text = f"### Extrema und Verteilung für Parameter {par_desc} in den Jahren {years[0]} bis {years[1]}"
         if month == ALL_MONTHS_EXPRESSION:
             text +=  " (Ganzes Jahr)"
         else:
             text +=  f" (Monat {month})"
         st.markdown(text, unsafe_allow_html=True)
-        text = f"""Der höchste Wert des Parameters `{par_desc}` während {num_years} Jahren beträgt {max}."""
+
+        if param == 'mittl_temperatur':
+            max_expr = f"{max:.2f} °C"
+            min_expr = f"{min:.2f} °C"
+        else:
+            max_expr = f"{max:.0f}"
+            min_expr = f"{min:.0f}"
+
+        text = f"""Der höchste Wert des Parameters `{par_desc}` während {num_years} Jahren beträgt {max_expr}."""
         if num_max == 1:
             text += f" Dieses Maximum wurde im {max_months_csv_list} gemessen."
         elif num_max < 6:
@@ -68,7 +59,7 @@ class Extremas():
         else:
             text += f" Dieses Maximum wurde {num_max} Mal gemessen."
 
-        text += f""" Der tiefste Wert für diesen Parameter beträgt {min}."""
+        text += f""" Der tiefste Wert für diesen Parameter beträgt {min_expr}."""
         if num_min == 1:
             text += f" Dieses Minimum wurde im {min_months_csv_list} registriert."
         elif num_min < 6:
