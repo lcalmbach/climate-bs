@@ -7,6 +7,7 @@ from stats import Stats
 from home import Home
 from extremas import Extremas
 from swissmeteo import MonthlyAverage
+from groundwater import Groundwater
 
 __version__ = '0.0.5'
 __author__ = 'Lukas Calmbach'
@@ -50,12 +51,12 @@ def main():
     else:
         pass
     
-    menu_options = ['Home', 'Temperatur seit 1864', 'Monats-Statistik', 'Jahres-Statistik', 'Rekorde']
+    menu_options = ['Home', 'Temperatur seit 1864', 'Monats-Statistik', 'Jahres-Statistik', 'Rekorde', 'Grundwasser']
     # https://icons.getbootstrap.com/
     with st.sidebar:
         st.markdown(f"## {my_name}")
         menu_action = option_menu(None, menu_options, 
-            icons=['house', 'calendar-month', 'calendar', 'award', 'thermometer'], 
+            icons=['house', 'calendar-month', 'calendar', 'award', 'thermometer', 'water'], 
             menu_icon="cast", default_index=0)
 
     if menu_action == menu_options[0]:
@@ -68,6 +69,8 @@ def main():
         app = Stats(StatType.YEARLY.value)
     elif menu_action == menu_options[4]:
         app = Extremas(StatType.YEARLY.value)
+    elif menu_action == menu_options[5]:
+        app = Groundwater()
     
     app.show_menu()
     st.sidebar.markdown(get_info(), unsafe_allow_html=True)

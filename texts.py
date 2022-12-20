@@ -15,3 +15,10 @@ Die Temperatur-Anomalien von Basel Binningen lassen sich mit dem gesamt-globalen
 Die Grafik lässt sich drehen, verschieben und mit der Mousescroll-Taste zoomen, je nach Perspekitve lassen sich unterschiedliche Erkenntnisse gewinnen.
 """
 
+GW_SPIRAL_LEGEND_PRE = """
+Diese Daten sind erst ca. ab 1983 verfügbar, eine vorindustrielle Referenzperiode (<1901) steht damit leider nicht zur Verfügung. Für diese Daten werden daher die effektiven Monatsmittel und nicht, wie bei der Lufttemperatur (Station Basel/Binningen, sowie globale Temperatur), die Differenz zu der Referenzperiode dargestellt. Wähle eine Station oder alle Stationen und schränke bei Bedarf die dargestellten Jahre in der Navigationsleiste an.
+"""
+
+GW_SPIRAL_LEGEND_POST = """
+Die Grundwassertemperatur wird in 80 Messtellen des Kantons regelmässig überwacht. Die Grundwassertemperatur ist für das Thema Klima von besonderem Interesse, da dieser Parameter träge auf Schwankungen an der Oberfläche reagiert. Trends werden geglättet und sind damit besser erkennbar als in Lufttemperatur-Daten. Die für eine, in den letzten Jahren sich beschleunigende, Erwärmung des Grundwassers ist in den meisten Stationen durch die charakteristische Trichterform gut erkennbar. Eine umfangreichere Analyse der Grundwassertemperatur findest du [hier](https://groundwater-bs.herokuapp.com/) unter Menu *Analysis/Reports* > *Temperature Trend*.
+"""

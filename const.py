@@ -43,6 +43,8 @@ ALL_MONTHS_EXPRESSION = 'Alle Monate'
 TEMPERATUR_LONG = './data/climate-reports-tables-homogenized_BAS.txt'
 HADCRUT_FILE_GL = "./data/HadCRUT.4.5.0.0.monthly_ns_avg.txt"
 HADCRUT_FILE_NH = "./data/HadCRUT.4.5.0.0.monthly_nh.txt"
+GROUNDWATER_URL = "https://data.bs.ch/api/v2/catalog/datasets/100179/records?limit=10000&timezone=UTC&select=stationnr,geo_point_2d,stationname,year(timestamp)%20as%20year,month(timestamp)%20as%20month,avg(value)%20as%20avg_value&group_by=stationnr,geo_point_2d,stationname,year(timestamp),month(timestamp)"
+GROUNDWATER_FILE = './data/groundwater.parquet'
 # frosttag: https://de.wikipedia.org/wiki/Frosttag
 # hitzetag: https://de.wikipedia.org/wiki/Hei%C3%9Fer_Tag
 # hagel https://de.wikipedia.org/wiki/Hagel
