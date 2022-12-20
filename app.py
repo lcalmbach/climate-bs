@@ -9,10 +9,10 @@ from extremas import Extremas
 from swissmeteo import MonthlyAverage
 from groundwater import Groundwater
 
-__version__ = '0.0.5'
+__version__ = '0.0.6'
 __author__ = 'Lukas Calmbach'
 __author_email__ = 'lcalmbach@gmail.com'
-VERSION_DATE = '2022-19-12'
+VERSION_DATE = '2022-20-12'
 my_name = 'Witterung-bs'
 my_kuerzel = "WEx"
 SOURCE_URL = 'https://data.bs.ch/explore/dataset/100227'
