@@ -15,7 +15,7 @@ Die Temperatur-Anomalien von Basel Binningen lassen sich mit dem gesamt-globalen
 Die Grafik lässt sich drehen, verschieben und mit der Mousescroll-Taste zoomen, je nach Perspekitve lassen sich unterschiedliche Erkenntnisse gewinnen.
 """
 
-GW_SPIRAL_LEGEND_PRE = """
+GW_SPIRAL_LEGEND_PRE = """### Monatliche Grundwassertemperaturen (°C) seit 1983
 Diese Daten sind erst ca. ab 1983 verfügbar, eine vorindustrielle Referenzperiode (<1901) steht damit leider nicht zur Verfügung. Für diese Daten werden daher die effektiven Monatsmittel und nicht, wie bei der Lufttemperatur (Station Basel/Binningen, sowie globale Temperatur), die Differenz zu der Referenzperiode dargestellt. Wähle eine Station oder *Alle Stationen* und schränke bei Bedarf die dargestellten Jahre in der Navigationsleiste an. Der Jahresfilter ist hilfreich um frühe Jahre die sich in gewissen Fällen ganz offensichtlich von den späteren Jahren abheben zu entfernen. Versuche dies zum Beispiel bei Auswahl *alle Stationen* wo die Mittelwerte vor 1988 deutlich wärmer sind.
 """
 

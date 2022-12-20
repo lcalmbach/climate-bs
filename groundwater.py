@@ -53,20 +53,15 @@ class Groundwater():
         station_options = ['Alle Stationen'] + sorted(list(self.data['stationname'].unique()))
         sel_station = st.sidebar.selectbox('Station', options=station_options)
         df = self.data
-        st.write(sel_station)
         if station_options.index(sel_station) == 0:
             df = df[['month','year','temperature']].groupby(['month','year']).agg('mean').reset_index()
-            st.write(df)
         else:
             df = df[df['stationname']==sel_station]
         min_year, max_year = int(df['year'].min()), int(df['year'].max())
         sel_years = st.sidebar.slider('Jahr', min_value=min_year, max_value=max_year, value =(min_year, max_year))
         
-        st.write(sel_years)
         if sel_years != [min_year, max_year]:
-            st.write(len(df))
             df = df[(df['year'] >= sel_years[0]) & (df['year'] <= sel_years[1])]
-            st.write(len(df))
         df = df[['month','year','temperature']].sort_values(by=['year', 'month'])
         df.columns = ['month','year','value']
         min = np.floor(df['value'].min())
