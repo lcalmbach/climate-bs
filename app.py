@@ -1,4 +1,4 @@
-import streamlit as st 
+import streamlit as st
 from streamlit_lottie import st_lottie
 from streamlit_option_menu import option_menu
 import requests
@@ -9,26 +9,30 @@ from extremas import Extremas
 from swissmeteo import MonthlyAverage
 from groundwater import Groundwater
 
-__version__ = '0.0.6'
-__author__ = 'Lukas Calmbach'
-__author_email__ = 'lcalmbach@gmail.com'
-VERSION_DATE = '2022-20-12'
-my_name = 'Witterung-bs'
+__version__ = "0.0.7"
+__author__ = "Lukas Calmbach"
+__author_email__ = "lcalmbach@gmail.com"
+VERSION_DATE = "2023-08-02"
+my_name = "Witterung-bs"
 my_kuerzel = "WEx"
-SOURCE_URL = 'https://data.bs.ch/explore/dataset/100227'
-GIT_REPO = 'https://github.com/lcalmbach/climate-bs'
+SOURCE_URL = "https://data.bs.ch/explore/dataset/100227"
+GIT_REPO = "https://github.com/lcalmbach/climate-bs"
 
 
-@st.experimental_memo()
+@st.cache_data()
 def get_lottie():
-    ok=True
-    r=''
+    ok = True
+    r = ""
     try:
         r = requests.get(LOTTIE_URL).json()
     except:
         ok = False
-    return r,ok
-METEO_SCHWEIZ = 'https://www.meteoswiss.admin.ch/services-and-publications/applications/ext/climate-tables-homogenized.html'
+    return r, ok
+
+
+METEO_SCHWEIZ = "https://www.meteoswiss.admin.ch/services-and-publications/applications/ext/climate-tables-homogenized.html"
+
+
 def get_info():
     text = f"""<div style="background-color:#34282C; padding: 10px;border-radius: 15px; border:solid 1px white;">
     <small>App von <a href="mailto:{__author_email__}">{__author__}</a><br>
@@ -38,26 +42,46 @@ def get_info():
     """
     return text
 
+
 def main():
     st.set_page_config(
         page_title=my_name,
         layout="wide",
-        page_icon='⛈️', )
+        page_icon="⛈️",
+    )
     # load_css()
     lottie_search_names, ok = get_lottie()
     if ok:
         with st.sidebar:
-            st_lottie(lottie_search_names,height=80, loop=20)
+            st_lottie(lottie_search_names, height=80, loop=20)
     else:
         pass
-    
-    menu_options = ['Home', 'Temperatur seit 1864', 'Monats-Statistik', 'Jahres-Statistik', 'Rekorde', 'Grundwasser']
+
+    menu_options = [
+        "Home",
+        "Temperatur seit 1864",
+        "Monats-Statistik",
+        "Jahres-Statistik",
+        "Rekorde",
+        "Grundwasser",
+    ]
     # https://icons.getbootstrap.com/
     with st.sidebar:
         st.markdown(f"## {my_name}")
-        menu_action = option_menu(None, menu_options, 
-            icons=['house', 'calendar-month', 'calendar', 'award', 'thermometer', 'water'], 
-            menu_icon="cast", default_index=0)
+        menu_action = option_menu(
+            None,
+            menu_options,
+            icons=[
+                "house",
+                "calendar-month",
+                "calendar",
+                "award",
+                "thermometer",
+                "water",
+            ],
+            menu_icon="cast",
+            default_index=0,
+        )
 
     if menu_action == menu_options[0]:
         app = Home()
@@ -71,9 +95,11 @@ def main():
         app = Extremas(StatType.YEARLY.value)
     elif menu_action == menu_options[5]:
         app = Groundwater()
-    
+
     app.show_menu()
     st.sidebar.markdown(get_info(), unsafe_allow_html=True)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
+
