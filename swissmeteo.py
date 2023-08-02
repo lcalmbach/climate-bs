@@ -28,9 +28,7 @@ class MonthlyAverage:
             lsuffix="",
             rsuffix="_agg",
         )
-        self.data["Temperature_diff"] = (
-            self.data["Temperature"] - self.data["Temperature_mean"]
-        ).astype(float)
+        self.data["Temperature_diff"] = self.data["Temperature"] - self.data["Temperature_mean"]
 
     def get_avg_pre_indust(self):
         df = self.data[self.data["Year"] < START_INDUSTRIAL_PERIOD]
@@ -38,7 +36,7 @@ class MonthlyAverage:
         group_fields = ["Month"]
         df = (
             df[fields]
-            .groupby(group_fields)["Temperature", "Precipitation"]
+            .groupby(group_fields)[["Temperature", "Precipitation"]]
             .agg(["min", "max", "mean"])
             .reset_index()
         )
